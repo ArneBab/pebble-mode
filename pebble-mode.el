@@ -63,13 +63,13 @@
 (defun pebble-indenting-keywords ()
   (append
    (pebble-closing-keywords)
-   '("else" "elif")))
+   '("else" "elseif")))
 
 (defun pebble-builtin-keywords ()
   '("as" "autoescape" "debug" "extends"
     "firstof" "in" "include" "load"
     "now" "regroup" "ssi" "templatetag"
-    "url" "widthratio" "elif" "true"
+    "url" "widthratio" "elseif" "true"
     "false" "none" "False" "True" "None"
     "loop" "super" "caller" "varargs"
     "kwargs" "break" "continue" "is"
