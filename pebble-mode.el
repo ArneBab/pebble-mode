@@ -1,8 +1,10 @@
-;;; jinja2-mode.el --- A major mode for jinja2
+;;; pebble-mode.el --- A major mode for pebble
 
 ;; Copyright (C) 2011-2022 Florian Mounier aka paradoxxxzero
+;; Copyright (C) 2022-- Arne Babenhauserheide for Disy Informationssysteme GmbH
 
 ;; Author: Florian Mounier aka paradoxxxzero
+;; Author: Arne Babenhauserheide
 ;; Version: 0.3
 
 ;; This program is free software: you can redistribute it and/or modify
@@ -20,50 +22,50 @@
 
 ;;; Commentary:
 
-;;   This is an emacs major mode for jinja2 with:
+;;   This is an emacs major mode for pebble with:
 ;;        syntax highlighting
 ;;        sgml/html integration
 ;;        indentation (working with sgml)
 ;;        more to come
 
-;; This file comes from http://github.com/paradoxxxzero/jinja2-mode
+;; pebble-mode is based on jinja2-mode by Florian Mounier
 
 ;;; Code:
 
 (require 'sgml-mode)
 
-(defgroup jinja2 nil
-  "Major mode for editing jinja2 code."
-  :prefix "jinja2-"
+(defgroup pebble nil
+  "Major mode for editing pebble code."
+  :prefix "pebble-"
   :group 'languages)
 
-(defcustom jinja2-user-keywords nil
+(defcustom pebble-user-keywords nil
   "Custom keyword names"
   :type '(repeat string)
-  :group 'jinja2)
+  :group 'pebble)
 
-(defcustom jinja2-user-functions nil
+(defcustom pebble-user-functions nil
   "Custom function names"
   :type '(repeat string)
-  :group 'jinja2)
+  :group 'pebble)
 
-;; (defcustom jinja2-debug nil
+;; (defcustom pebble-debug nil
 ;;   "Log indentation logic"
 ;;   :type 'boolean
-;;   :group 'jinja2)
+;;   :group 'pebble)
 
-(defun jinja2-closing-keywords ()
+(defun pebble-closing-keywords ()
   (append
-   jinja2-user-keywords
+   pebble-user-keywords
    '("if" "for" "block" "filter" "with"
      "raw" "macro" "autoescape" "trans" "call")))
 
-(defun jinja2-indenting-keywords ()
+(defun pebble-indenting-keywords ()
   (append
-   (jinja2-closing-keywords)
+   (pebble-closing-keywords)
    '("else" "elif")))
 
-(defun jinja2-builtin-keywords ()
+(defun pebble-builtin-keywords ()
   '("as" "autoescape" "debug" "extends"
     "firstof" "in" "include" "load"
     "now" "regroup" "ssi" "templatetag"
@@ -76,9 +78,9 @@
     "context" "with" "without" "ignore"
     "missing" "scoped"))
 
-(defun jinja2-functions-keywords ()
+(defun pebble-functions-keywords ()
   (append
-   jinja2-user-functions
+   pebble-user-functions
    '("abs" "attr" "batch" "capitalize"
      "center" "default" "dictsort"
      "escape" "filesizeformat" "first"
@@ -91,7 +93,7 @@
      "title" "trim" "truncate" "upper"
      "urlize" "wordcount" "wordwrap" "xmlattr")))
 
-(defun jinja2-find-open-tag ()
+(defun pebble-find-open-tag ()
   (if (search-backward-regexp
        (rx-to-string
         `(and "{%"
@@ -101,7 +103,7 @@
                   "end"))
               (group
                ,(append '(or)
-                        (jinja2-closing-keywords)
+                        (pebble-closing-keywords)
                         ))
               (group
                (*? anything))
@@ -109,17 +111,17 @@
               (? "-")
               "%}")) nil t)
       (if (match-string 1) ;; End tag, going on
-          (let ((matches (jinja2-find-open-tag)))
+          (let ((matches (pebble-find-open-tag)))
             (if (string= (car matches) (match-string 2))
-                (jinja2-find-open-tag)
+                (pebble-find-open-tag)
               (list (match-string 2) (match-string 3))))
         (list (match-string 2) (match-string 3)))
     nil))
 
-(defun jinja2-close-tag ()
+(defun pebble-close-tag ()
   "Close the previously opened template tag."
   (interactive)
-  (let ((open-tag (save-excursion (jinja2-find-open-tag))))
+  (let ((open-tag (save-excursion (pebble-find-open-tag))))
     (if open-tag
         (insert
          (if (string= (car open-tag) "block")
@@ -128,33 +130,33 @@
            (format "{%% end%s %%}"
                    (match-string 2))))
       (error "Nothing to close")))
-  (save-excursion (jinja2-indent-line)))
+  (save-excursion (pebble-indent-line)))
 
-(defun jinja2-insert-tag ()
+(defun pebble-insert-tag ()
   "Insert an empty tag"
   (interactive)
   (insert "{% ")
   (save-excursion
     (insert " %}")
-    (jinja2-indent-line)))
+    (pebble-indent-line)))
 
-(defun jinja2-insert-var ()
+(defun pebble-insert-var ()
   "Insert an empty tag"
   (interactive)
   (insert "{{ ")
   (save-excursion
     (insert " }}")
-    (jinja2-indent-line)))
+    (pebble-indent-line)))
 
-(defun jinja2-insert-comment ()
+(defun pebble-insert-comment ()
   "Insert an empty tag"
   (interactive)
   (insert "{# ")
   (save-excursion
     (insert " #}")
-    (jinja2-indent-line)))
+    (pebble-indent-line)))
 
-(defconst jinja2-font-lock-comments
+(defconst pebble-font-lock-comments
   `(
     (,(rx "{#"
           (* whitespace)
@@ -165,20 +167,20 @@
           "#}")
      . (1 font-lock-comment-face t))))
 
-(defconst jinja2-font-lock-keywords-1
+(defconst pebble-font-lock-keywords-1
   (append
-   jinja2-font-lock-comments
+   pebble-font-lock-comments
    sgml-font-lock-keywords-1))
 
-(defconst jinja2-font-lock-keywords-2
+(defconst pebble-font-lock-keywords-2
   (append
-   jinja2-font-lock-keywords-1
+   pebble-font-lock-keywords-1
    sgml-font-lock-keywords-2))
 
-(defconst jinja2-font-lock-keywords-3
+(defconst pebble-font-lock-keywords-3
   (append
-   jinja2-font-lock-keywords-1
-   jinja2-font-lock-keywords-2
+   pebble-font-lock-keywords-1
+   pebble-font-lock-keywords-2
    `(
      (,(rx "{{"
            (* whitespace)
@@ -197,7 +199,7 @@
      (,(rx-to-string `(and (group "|" (* whitespace))
                            (group
                             ,(append '(or)
-                                     (jinja2-functions-keywords)
+                                     (pebble-functions-keywords)
                                      ))))
       (1 font-lock-keyword-face t)
       (2 font-lock-function-name-face t)
@@ -205,12 +207,12 @@
      (,(rx-to-string `(and word-start
                            (? "end")
                            ,(append '(or)
-                                    (jinja2-indenting-keywords)
+                                    (pebble-indenting-keywords)
                                     )
                            word-end)) (0 font-lock-keyword-face))
      (,(rx-to-string `(and word-start
                            ,(append '(or)
-                                    (jinja2-builtin-keywords)
+                                    (pebble-builtin-keywords)
                                     )
                            word-end)) (0 font-lock-builtin-face))
 
@@ -227,10 +229,10 @@
      (,(rx (or "{#" "#}")) (0 font-lock-comment-delimiter-face t))
      )))
 
-(defvar jinja2-font-lock-keywords
-  jinja2-font-lock-keywords-1)
+(defvar pebble-font-lock-keywords
+  pebble-font-lock-keywords-1)
 
-(defvar jinja2-enable-indent-on-save nil)
+(defvar pebble-enable-indent-on-save nil)
 
 (defun sgml-indent-line-num ()
   "Indent the current line as SGML."
@@ -246,24 +248,24 @@
           (save-excursion indent-col)
         indent-col))))
 
-(defun jinja2-calculate-indent-backward (default)
+(defun pebble-calculate-indent-backward (default)
   "Return indent column based on previous lines"
   (let ((indent-width sgml-basic-offset) (default (sgml-indent-line-num)))
     (forward-line -1)
     (if (looking-at "^[ \t]*{%-? *end") ; Don't indent after end
         (current-indentation)
-      (if (looking-at (concat "^[ \t]*{%-? *.*?{%-? *end" (regexp-opt (jinja2-indenting-keywords))))
+      (if (looking-at (concat "^[ \t]*{%-? *.*?{%-? *end" (regexp-opt (pebble-indenting-keywords))))
           (current-indentation)
-        (if (looking-at (concat "^[ \t]*{%-? *" (regexp-opt (jinja2-indenting-keywords)))) ; Check start tag
+        (if (looking-at (concat "^[ \t]*{%-? *" (regexp-opt (pebble-indenting-keywords)))) ; Check start tag
             (+ (current-indentation) indent-width)
           (if (looking-at "^[ \t]*<") ; Assume sgml block trust sgml
               default
             (if (bobp)
                 0
-              (jinja2-calculate-indent-backward default))))))))
+              (pebble-calculate-indent-backward default))))))))
 
 
-(defun jinja2-calculate-indent ()
+(defun pebble-calculate-indent ()
   "Return indent column"
   (if (bobp)  ; Check beginning of buffer
       0
@@ -273,35 +275,35 @@
             (forward-line -1)
             (if
                 (and
-                 (looking-at (concat "^[ \t]*{%-? *" (regexp-opt (jinja2-indenting-keywords))))
-                 (not (looking-at (concat "^[ \t]*{%-? *.*?{% *end" (regexp-opt (jinja2-indenting-keywords))))))
+                 (looking-at (concat "^[ \t]*{%-? *" (regexp-opt (pebble-indenting-keywords))))
+                 (not (looking-at (concat "^[ \t]*{%-? *.*?{% *end" (regexp-opt (pebble-indenting-keywords))))))
                 (current-indentation)
               (- (current-indentation) indent-width)))
         (if (looking-at "^[ \t]*</") ; Assume sgml end block trust sgml
             default
           (save-excursion
-            (jinja2-calculate-indent-backward default)))))))
+            (pebble-calculate-indent-backward default)))))))
 
-(defun jinja2-indent-line ()
-  "Indent current line as Jinja code"
+(defun pebble-indent-line ()
+  "Indent current line as pebble code"
   (interactive)
   (let ((old_indent (current-indentation)) (old_point (point)))
     (move-beginning-of-line nil)
-    (let ((indent (max 0 (jinja2-calculate-indent))))
+    (let ((indent (max 0 (pebble-calculate-indent))))
       (indent-line-to indent)
       (if (< old_indent (- old_point (line-beginning-position)))
           (goto-char (+ (- indent old_indent) old_point)))
       indent)))
 
-(defun jinja2-indent-buffer()
+(defun pebble-indent-buffer()
   (interactive)
   (save-excursion
     (indent-region (point-min) (point-max))))
 
 ;;;###autoload
-(define-derived-mode jinja2-mode html-mode  "Jinja2"
-  "Major mode for editing jinja2 files"
-  :group 'jinja2
+(define-derived-mode pebble-mode html-mode  "Pebble"
+  "Major mode for editing pebble files"
+  :group 'pebble
   ;; Disabling this because of this emacs bug: 
   ;;  http://lists.gnu.org/archive/html/bug-gnu-emacs/2002-09/msg00041.html
   ;; (modify-syntax-entry ?\'  "\"" sgml-mode-syntax-table)
@@ -312,30 +314,30 @@
   ;; it mainly from sgml-mode font lock setting
   (set (make-local-variable 'font-lock-defaults)
        '((
-          jinja2-font-lock-keywords
-          jinja2-font-lock-keywords-1
-          jinja2-font-lock-keywords-2
-          jinja2-font-lock-keywords-3)
+          pebble-font-lock-keywords
+          pebble-font-lock-keywords-1
+          pebble-font-lock-keywords-2
+          pebble-font-lock-keywords-3)
          nil t nil nil
          (font-lock-syntactic-keywords
           . sgml-font-lock-syntactic-keywords)))
-  (set (make-local-variable 'indent-line-function) 'jinja2-indent-line))
+  (set (make-local-variable 'indent-line-function) 'pebble-indent-line))
 
-(define-key jinja2-mode-map (kbd "C-c c") 'jinja2-close-tag)
-(define-key jinja2-mode-map (kbd "C-c t") 'jinja2-insert-tag)
-(define-key jinja2-mode-map (kbd "C-c v") 'jinja2-insert-var)
-(define-key jinja2-mode-map (kbd "C-c #") 'jinja2-insert-comment)
+(define-key pebble-mode-map (kbd "C-c c") 'pebble-close-tag)
+(define-key pebble-mode-map (kbd "C-c t") 'pebble-insert-tag)
+(define-key pebble-mode-map (kbd "C-c v") 'pebble-insert-var)
+(define-key pebble-mode-map (kbd "C-c #") 'pebble-insert-comment)
 
-(when jinja2-enable-indent-on-save
-  (add-hook 'jinja2-mode-hook
+(when pebble-enable-indent-on-save
+  (add-hook 'pebble-mode-hook
     (lambda ()
-      (add-hook 'after-save-hook 'jinja2-indent-buffer nil 'make-it-local))))
+      (add-hook 'after-save-hook 'pebble-indent-buffer nil 'make-it-local))))
 
 ;;;###autoload
-(add-to-list 'auto-mode-alist '("\\.jinja2\\'" . jinja2-mode))
+(add-to-list 'auto-mode-alist '("\\.pebble\\'" . pebble-mode))
 ;;;###autoload
-(add-to-list 'auto-mode-alist '("\\.j2\\'" . jinja2-mode))
+(add-to-list 'auto-mode-alist '("\\.j2\\'" . pebble-mode))
 
-(provide 'jinja2-mode)
+(provide 'pebble-mode)
 
-;;; jinja2-mode.el ends here
+;;; pebble-mode.el ends here
