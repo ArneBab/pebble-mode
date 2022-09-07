@@ -58,6 +58,11 @@
   :group 'pebble)
 
 
+(defcustom pebble-user-filters-arguments nil
+  "Custom filter names that take arguments."
+  :type '()
+  :group 'pebble)
+
 ;; (defcustom pebble-debug nil
 ;;   "Log indentation logic"
 ;;   :type 'boolean
