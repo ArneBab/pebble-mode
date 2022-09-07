@@ -402,10 +402,10 @@
           . sgml-font-lock-syntactic-keywords)))
   (set (make-local-variable 'indent-line-function) 'pebble-indent-line))
 
-(define-key pebble-mode-map (kbd "C-c c") 'pebble-close-tag)
-(define-key pebble-mode-map (kbd "C-c t") 'pebble-insert-tag)
-(define-key pebble-mode-map (kbd "C-c v") 'pebble-insert-var)
-(define-key pebble-mode-map (kbd "C-c #") 'pebble-insert-comment)
+(define-key pebble-mode-map (kbd "C-c RET c") 'pebble-close-tag)
+(define-key pebble-mode-map (kbd "C-c RET t") 'pebble-insert-tag)
+(define-key pebble-mode-map (kbd "C-c RET v") 'pebble-insert-var)
+(define-key pebble-mode-map (kbd "C-c RET #") 'pebble-insert-comment)
 
 (when pebble-enable-indent-on-save
   (add-hook 'pebble-mode-hook
