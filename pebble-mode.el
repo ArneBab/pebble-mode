@@ -51,6 +51,13 @@
   :type '(repeat string)
   :group 'pebble)
 
+
+(defcustom pebble-user-filters nil
+  "Custom filter names."
+  :type '()
+  :group 'pebble)
+
+
 ;; (defcustom pebble-debug nil
 ;;   "Log indentation logic"
 ;;   :type 'boolean
