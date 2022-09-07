@@ -83,7 +83,7 @@
     "context" "with" "without" "ignore"
     "missing" "scoped"))
 
-(defun pebble-functions-keywords ()
+(defun pebble-filters-keywords ()
   "Keywords that can be used as filters."
   (append
    pebble-user-functions
@@ -206,7 +206,7 @@
      (,(rx-to-string `(and (group "|" (* whitespace))
                            (group
                             ,(append '(or)
-                                     (pebble-functions-keywords)
+                                     (pebble-filters-keywords)
                                      ))))
       (1 font-lock-keyword-face t)
       (2 font-lock-function-name-face t)
