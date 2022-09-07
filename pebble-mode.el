@@ -110,7 +110,7 @@
      ;; pebble specifics
      "flush")
    ;; operators FIXME < and > are illegal in sgml, so they show errors.
-   '("equals" "==" "!=" "<" ">" "<=" ">=" "contains" "logic" "math" "others")
+   '("equals" "==" "!=" "contains" "logic" "math" "others")
    ;; tests
    '("empty" "eve," "map" "null" "odd" "iterable")))
 
@@ -135,7 +135,7 @@
   (append
    pebble-user-functions
    '("block" "i18n" "max" "min"
-     "parent" "range")))
+     "parent" "range" "bundle" )))
 
 (defun pebble-find-open-tag ()
   "Find the innermost open tag."
@@ -235,28 +235,29 @@
            (* whitespace)
            "}}")
       (1 font-lock-variable-name-face t))
-     (,(rx-to-string
-        `(and
-          "{{"
-           (* whitespace)
-           (group
-            ,(append '(or) (pebble-functions-keywords)))
-           "(" (* anything) ")"
-           (*
-            "|" (* whitespace) (*? anything))
-           (* whitespace)
-           "}}"))
-      (1 font-lock-function-name-face t))
+     ;; show a warning for every filter that is not recognized.
      (,(rx  (group "|" (* whitespace))
             (group (+ word)))
       (1 font-lock-keyword-face t)
       (2 font-lock-warning-face t))
+     ;; show a warning for every function that is not recognized.
+     (,(rx  "{{" (* whitespace)
+            (group (+ word))
+            (* whitespace)
+            "(" (* (not "}")) ")")
+      (1 font-lock-warning-face t))
      (,(rx-to-string `(and (group "|" (* whitespace))
                            (group
                             ,(append '(or)
                                      (pebble-filters-keywords)))))
       (1 font-lock-keyword-face t)
       (2 font-lock-function-name-face t))
+     (,(rx-to-string `(: "{{"
+           (* whitespace)
+           (group
+            (eval (cons 'or (pebble-functions-keywords))))
+           "(" (* (not "}")) ")"))
+      (1 font-lock-function-name-face t))
      (,(rx (and (group (* whitespace) "?" (* whitespace))
                 (group (+ anything))
                 (group (* whitespace) ":" (* whitespace))
