@@ -63,13 +63,13 @@
 
 (defcustom pebble-user-filters nil
   "Custom filter names."
-  :type '()
+  :type '(repeat string)
   :group 'pebble)
 
 
 (defcustom pebble-user-filters-arguments nil
   "Custom filter names that take arguments."
-  :type '()
+  :type '(repeat string)
   :group 'pebble)
 
 ;; (defcustom pebble-debug nil
