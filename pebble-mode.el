@@ -413,9 +413,7 @@
       (add-hook 'after-save-hook 'pebble-indent-buffer nil 'make-it-local))))
 
 ;;;###autoload
-(add-to-list 'auto-mode-alist '("\\.pebble\\'" . pebble-mode))
-;;;###autoload
-(add-to-list 'auto-mode-alist '("\\.j2\\'" . pebble-mode))
+(add-to-list 'auto-mode-alist '("\\.peb\\'" . pebble-mode))
 
 (provide 'pebble-mode)
 
