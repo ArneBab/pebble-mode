@@ -22,11 +22,13 @@
 
 ;;; Commentary:
 
-;;   This is an emacs major mode for pebble with:
+;;   This is an Emacs major mode for pebble with:
 ;;        syntax highlighting
 ;;        sgml/html integration
 ;;        indentation (working with sgml)
 ;;        more to come
+
+;; It follows pebbles syntax reference: https://pebbletemplates.io/wiki/guide/basic-usage/
 
 ;; pebble-mode is based on jinja2-mode by Florian Mounier
 
@@ -40,12 +42,12 @@
   :group 'languages)
 
 (defcustom pebble-user-keywords nil
-  "Custom keyword names"
+  "Custom keyword names."
   :type '(repeat string)
   :group 'pebble)
 
 (defcustom pebble-user-functions nil
-  "Custom function names"
+  "Custom function names."
   :type '(repeat string)
   :group 'pebble)
 
@@ -55,17 +57,20 @@
 ;;   :group 'pebble)
 
 (defun pebble-closing-keywords ()
+  "Keywords that open a tag which gets closed with an end tag."
   (append
    pebble-user-keywords
    '("if" "for" "block" "filter" "with"
      "raw" "macro" "autoescape" "trans" "call")))
 
 (defun pebble-indenting-keywords ()
+  "Keywords that close and re-open indentation."
   (append
    (pebble-closing-keywords)
    '("else" "elseif")))
 
 (defun pebble-builtin-keywords ()
+  "Core keywords."
   '("as" "autoescape" "debug" "extends"
     "firstof" "in" "include" "load"
     "now" "regroup" "ssi" "templatetag"
@@ -79,6 +84,7 @@
     "missing" "scoped"))
 
 (defun pebble-functions-keywords ()
+  "Keywords that can be used as filters."
   (append
    pebble-user-functions
    '("abs" "attr" "batch" "capitalize"
@@ -94,6 +100,7 @@
      "urlize" "wordcount" "wordwrap" "xmlattr")))
 
 (defun pebble-find-open-tag ()
+  "Find the innermost open tag."
   (if (search-backward-regexp
        (rx-to-string
         `(and "{%"
@@ -133,7 +140,7 @@
   (save-excursion (pebble-indent-line)))
 
 (defun pebble-insert-tag ()
-  "Insert an empty tag"
+  "Insert an empty tag."
   (interactive)
   (insert "{% ")
   (save-excursion
@@ -141,7 +148,7 @@
     (pebble-indent-line)))
 
 (defun pebble-insert-var ()
-  "Insert an empty tag"
+  "Insert an empty tag."
   (interactive)
   (insert "{{ ")
   (save-excursion
@@ -149,7 +156,7 @@
     (pebble-indent-line)))
 
 (defun pebble-insert-comment ()
-  "Insert an empty tag"
+  "Insert an empty tag."
   (interactive)
   (insert "{# ")
   (save-excursion
@@ -249,7 +256,7 @@
         indent-col))))
 
 (defun pebble-calculate-indent-backward (default)
-  "Return indent column based on previous lines"
+  "Return indent column based on previous lines; DEFAULT is indentation from sgml."
   (let ((indent-width sgml-basic-offset) (default (sgml-indent-line-num)))
     (forward-line -1)
     (if (looking-at "^[ \t]*{%-? *end") ; Don't indent after end
@@ -266,7 +273,7 @@
 
 
 (defun pebble-calculate-indent ()
-  "Return indent column"
+  "Return indent column."
   (if (bobp)  ; Check beginning of buffer
       0
     (let ((indent-width sgml-basic-offset) (default (sgml-indent-line-num)))
@@ -285,7 +292,7 @@
             (pebble-calculate-indent-backward default)))))))
 
 (defun pebble-indent-line ()
-  "Indent current line as pebble code"
+  "Indent current line as pebble code."
   (interactive)
   (let ((old_indent (current-indentation)) (old_point (point)))
     (move-beginning-of-line nil)
@@ -296,15 +303,16 @@
       indent)))
 
 (defun pebble-indent-buffer()
+  "Re-indent the whole buffer."
   (interactive)
   (save-excursion
     (indent-region (point-min) (point-max))))
 
 ;;;###autoload
 (define-derived-mode pebble-mode html-mode  "Pebble"
-  "Major mode for editing pebble files"
+  "Major mode for editing pebble files."
   :group 'pebble
-  ;; Disabling this because of this emacs bug: 
+  ;; Disabling this because of this emacs bug:
   ;;  http://lists.gnu.org/archive/html/bug-gnu-emacs/2002-09/msg00041.html
   ;; (modify-syntax-entry ?\'  "\"" sgml-mode-syntax-table)
   (set (make-local-variable 'comment-start) "{#")
