@@ -32,6 +32,15 @@
 
 ;; pebble-mode is based on jinja2-mode by Florian Mounier
 
+;; TODO
+;; - [X] add additional [X] tags, [X] filters, [X] functions.
+;; - [X] remove unsupported [X] tags, [X] filters, [X] functions.
+;; - [ ] remove unsupported built-ins
+;; - [X] differentiate between filters with and without arguments
+;; - [X] differentiate between filters and functions.
+;; - [X] Support ternary operator: https://pebbletemplates.io/wiki/operator/others/
+;; - [ ] support larger than and smaller than: {% if users|length > 10 %} FIXME: this is not valid sgml!
+
 ;;; Code:
 
 (require 'sgml-mode)
@@ -72,8 +81,10 @@
   "Keywords that open a tag which gets closed with an end tag."
   (append
    pebble-user-keywords
-   '("if" "for" "block" "filter" "with"
-     "raw" "macro" "autoescape" "trans" "call")))
+   '("if" "for" "block" "filter" "macro" "autoescape"
+     ;; pebble-specifics
+     "cache" "embed" "parallel" "verbatim"
+     )))
 
 (defun pebble-indenting-keywords ()
   "Keywords that close and re-open indentation."
@@ -83,33 +94,48 @@
 
 (defun pebble-builtin-keywords ()
   "Core keywords."
-  '("as" "autoescape" "debug" "extends"
-    "firstof" "in" "include" "load"
-    "now" "regroup" "ssi" "templatetag"
-    "url" "widthratio" "elseif" "true"
-    "false" "none" "False" "True" "None"
-    "loop" "super" "caller" "varargs"
-    "kwargs" "break" "continue" "is"
-    "not" "or" "and"
-    "do" "pluralize" "set" "from" "import"
-    "context" "with" "without" "ignore"
-    "missing" "scoped"))
+  (append
+   '("as" "autoescape" "debug" "extends"
+     "firstof" "in" "include" "load"
+     "now" "regroup" "ssi" "templatetag"
+     "url" "widthratio" "elseif" "true"
+     "false" "none" "False" "True" "None"
+     "loop" "super" "caller" "varargs"
+     "kwargs" "break" "continue" "is"
+     "not" "or" "and"
+     "do" "pluralize" "set" "from" "import"
+     "context" "with" "without" "ignore"
+     "missing" "scoped"
+     ;; pebble specifics
+     "flush"
+     )
+   ;; operators FIXME < and > are illegal in sgml, so they show errors.
+   '("equals" "==" "!=" "<" ">" "<=" ">=" "contains" "logic" "math" "others")
+   ;; tests
+   '("empty" "eve," "map" "null" "odd" "iterable")))
 
 (defun pebble-filters-keywords ()
   "Keywords that can be used as filters."
   (append
+   pebble-user-filters
+   '("abs" "base64decode" "base64encode" "capitalize"
+     "escape" "first" "last" "length" "lower"
+     "raw" "reverse" "rsort" "sha256" "sort" "title"
+     "trim" "upper" "urlencode")))
+
+(defun pebble-filters-arguments-keywords ()
+  "Keywords that can be used as filters and take arguments."
+  (append
+   pebble-user-filters-arguments
+   '("abbreviate" "date" "default" "numberformat"
+     "replace" "slice" "split" "join")))
+
+(defun pebble-functions-keywords ()
+  "Keywords that can be used as filters."
+  (append
    pebble-user-functions
-   '("abs" "attr" "batch" "capitalize"
-     "center" "default" "dictsort"
-     "escape" "filesizeformat" "first"
-     "float" "forceescape" "format"
-     "groupby" "indent" "int" "join"
-     "last" "length" "list" "lower"
-     "pprint" "random" "replace"
-     "reverse" "round" "safe" "slice"
-     "sort" "string" "striptags" "sum"
-     "title" "trim" "truncate" "upper"
-     "urlize" "wordcount" "wordwrap" "xmlattr")))
+   '("block" "i18n" "max" "min"
+     "parent" "range")))
 
 (defun pebble-find-open-tag ()
   "Find the innermost open tag."
@@ -209,7 +235,20 @@
            (*
             "|" (* whitespace) (*? anything))
            (* whitespace)
-           "}}") (1 font-lock-variable-name-face t))
+           "}}")
+      (1 font-lock-variable-name-face t))
+     (,(rx-to-string
+        `(and
+          "{{"
+           (* whitespace)
+           (group
+            ,(append '(or) (pebble-functions-keywords)))
+           "(" (* anything) ")"
+           (*
+            "|" (* whitespace) (*? anything))
+           (* whitespace)
+           "}}"))
+      (1 font-lock-function-name-face t))
      (,(rx  (group "|" (* whitespace))
             (group (+ word))
             )
@@ -220,6 +259,24 @@
                             ,(append '(or)
                                      (pebble-filters-keywords)
                                      ))))
+      (1 font-lock-keyword-face t)
+      (2 font-lock-function-name-face t)
+      )
+     (,(rx (and (group (* whitespace) "?" (* whitespace))
+                (group (+ anything))
+                (group (* whitespace) ":" (* whitespace))
+                (group (or (group (+ word)) (group "\"" (* anything) "\"")))
+                (* whitespace)
+                "%}"))
+      (1 font-lock-keyword-face t)
+      (3 font-lock-keyword-face t)
+      )
+     (,(rx-to-string `(and (group "|" (* whitespace))
+                           (group
+                            ,(append '(or)
+                                     (pebble-filters-arguments-keywords)
+                                     ))
+                           (and "(" (* anything) ")")))
       (1 font-lock-keyword-face t)
       (2 font-lock-function-name-face t)
       )
