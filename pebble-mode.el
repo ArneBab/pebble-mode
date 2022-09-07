@@ -1,5 +1,7 @@
 ;;; pebble-mode.el --- A major mode for pebble
 
+;; Homepage: https://github.com/ArneBab/pebble-mode
+
 ;; Copyright (C) 2011-2022 Florian Mounier aka paradoxxxzero
 ;; Copyright (C) 2022-- Arne Babenhauserheide for Disy Informationssysteme GmbH
 
@@ -83,8 +85,7 @@
    pebble-user-keywords
    '("if" "for" "block" "filter" "macro" "autoescape"
      ;; pebble-specifics
-     "cache" "embed" "parallel" "verbatim"
-     )))
+     "cache" "embed" "parallel" "verbatim")))
 
 (defun pebble-indenting-keywords ()
   "Keywords that close and re-open indentation."
@@ -107,8 +108,7 @@
      "context" "with" "without" "ignore"
      "missing" "scoped"
      ;; pebble specifics
-     "flush"
-     )
+     "flush")
    ;; operators FIXME < and > are illegal in sgml, so they show errors.
    '("equals" "==" "!=" "<" ">" "<=" ">=" "contains" "logic" "math" "others")
    ;; tests
@@ -148,8 +148,7 @@
                   "end"))
               (group
                ,(append '(or)
-                        (pebble-closing-keywords)
-                        ))
+                        (pebble-closing-keywords)))
               (group
                (*? anything))
               (* whitespace)
@@ -207,8 +206,7 @@
     (,(rx "{#"
           (* whitespace)
           (group
-           (*? anything)
-           )
+           (*? anything))
           (* whitespace)
           "#}")
      . (1 font-lock-comment-face t))))
@@ -231,8 +229,7 @@
      (,(rx "{{"
            (* whitespace)
            (group
-            (*? anything)
-            )
+            (*? anything))
            (*
             "|" (* whitespace) (*? anything))
            (* whitespace)
@@ -251,18 +248,15 @@
            "}}"))
       (1 font-lock-function-name-face t))
      (,(rx  (group "|" (* whitespace))
-            (group (+ word))
-            )
+            (group (+ word)))
       (1 font-lock-keyword-face t)
       (2 font-lock-warning-face t))
      (,(rx-to-string `(and (group "|" (* whitespace))
                            (group
                             ,(append '(or)
-                                     (pebble-filters-keywords)
-                                     ))))
+                                     (pebble-filters-keywords)))))
       (1 font-lock-keyword-face t)
-      (2 font-lock-function-name-face t)
-      )
+      (2 font-lock-function-name-face t))
      (,(rx (and (group (* whitespace) "?" (* whitespace))
                 (group (+ anything))
                 (group (* whitespace) ":" (* whitespace))
@@ -270,28 +264,23 @@
                 (* whitespace)
                 "%}"))
       (1 font-lock-keyword-face t)
-      (3 font-lock-keyword-face t)
-      )
+      (3 font-lock-keyword-face t))
      (,(rx-to-string `(and (group "|" (* whitespace))
                            (group
                             ,(append '(or)
-                                     (pebble-filters-arguments-keywords)
-                                     ))
+                                     (pebble-filters-arguments-keywords)))
                            (and "(" (* anything) ")")))
       (1 font-lock-keyword-face t)
-      (2 font-lock-function-name-face t)
-      )
+      (2 font-lock-function-name-face t))
      (,(rx-to-string `(and word-start
                            (? "end")
                            ,(append '(or)
-                                    (pebble-indenting-keywords)
-                                    )
+                                    (pebble-indenting-keywords))
                            word-end))
       (0 font-lock-keyword-face))
      (,(rx-to-string `(and word-start
                            ,(append '(or)
-                                    (pebble-builtin-keywords)
-                                    )
+                                    (pebble-builtin-keywords))
                            word-end))
       (0 font-lock-builtin-face))
      (,(rx (or "{%" "%}" "{%-" "-%}")) (0 font-lock-function-name-face t))
@@ -299,20 +288,18 @@
      (,(rx "{#"
            (* whitespace)
            (group
-            (*? anything)
-            )
+            (*? anything))
            (* whitespace)
            "#}")
       (1 font-lock-comment-face t))
-     (,(rx (or "{#" "#}")) (0 font-lock-comment-delimiter-face t))
-     )))
+     (,(rx (or "{#" "#}")) (0 font-lock-comment-delimiter-face t)))))
 
 (defvar pebble-font-lock-keywords
   pebble-font-lock-keywords-1)
 
 (defvar pebble-enable-indent-on-save nil)
 
-(defun sgml-indent-line-num ()
+(defun pebble--sgml-indent-line-num ()
   "Indent the current line as SGML."
   (let* ((savep (point))
          (indent-col
@@ -328,7 +315,7 @@
 
 (defun pebble-calculate-indent-backward (default)
   "Return indent column based on previous lines; DEFAULT is indentation from sgml."
-  (let ((indent-width sgml-basic-offset) (default (sgml-indent-line-num)))
+  (let ((indent-width sgml-basic-offset) (default (pebble--sgml-indent-line-num)))
     (forward-line -1)
     (if (looking-at "^[ \t]*{%-? *end") ; Don't indent after end
         (current-indentation)
@@ -347,7 +334,7 @@
   "Return indent column."
   (if (bobp)  ; Check beginning of buffer
       0
-    (let ((indent-width sgml-basic-offset) (default (sgml-indent-line-num)))
+    (let ((indent-width sgml-basic-offset) (default (pebble--sgml-indent-line-num)))
       (if (looking-at "^[ \t]*{%-? *e\\(nd\\|lse\\|lif\\)") ; Check close tag
           (save-excursion
             (forward-line -1)
