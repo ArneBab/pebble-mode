@@ -154,7 +154,8 @@
                (*? anything))
               (* whitespace)
               (? "-")
-              "%}")) nil t)
+              "%}"))
+       nil t)
       (if (match-string 1) ;; End tag, going on
           (let ((matches (pebble-find-open-tag)))
             (if (string= (car matches) (match-string 2))
@@ -285,13 +286,14 @@
                            ,(append '(or)
                                     (pebble-indenting-keywords)
                                     )
-                           word-end)) (0 font-lock-keyword-face))
+                           word-end))
+      (0 font-lock-keyword-face))
      (,(rx-to-string `(and word-start
                            ,(append '(or)
                                     (pebble-builtin-keywords)
                                     )
-                           word-end)) (0 font-lock-builtin-face))
-
+                           word-end))
+      (0 font-lock-builtin-face))
      (,(rx (or "{%" "%}" "{%-" "-%}")) (0 font-lock-function-name-face t))
      (,(rx (or "{{" "}}")) (0 font-lock-type-face t))
      (,(rx "{#"
