@@ -398,7 +398,7 @@
 (when pebble-enable-indent-on-save
   (add-hook 'pebble-mode-hook
     (lambda ()
-      (add-hook 'after-save-hook 'pebble-indent-buffer nil 'make-it-local))))
+      (add-hook 'after-save-hook '#pebble-indent-buffer nil 'make-it-local))))
 
 ;;;###autoload
 (add-to-list 'auto-mode-alist '("\\.peb\\'" . pebble-mode))
