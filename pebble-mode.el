@@ -34,7 +34,7 @@
 
 ;; pebble-mode is based on jinja2-mode by Florian Mounier
 
-;; TODO
+;;; TODO:
 ;; - [X] add additional [X] tags, [X] filters, [X] functions.
 ;; - [X] remove unsupported [X] tags, [X] filters, [X] functions.
 ;; - [ ] remove unsupported built-ins
