@@ -367,6 +367,15 @@
   (save-excursion
     (indent-region (point-min) (point-max))))
 
+(defvar pebble-mode-map
+  (let ((map (make-sparse-keymap)))
+    (set-keymap-parent map html-mode-map)
+    (define-key map (kbd "C-c RET c") 'pebble-close-tag)
+    (define-key map (kbd "C-c RET t") 'pebble-insert-tag)
+    (define-key map (kbd "C-c RET v") 'pebble-insert-var)
+    (define-key map (kbd "C-c RET #") 'pebble-insert-comment)
+    map))
+
 ;;;###autoload
 (define-derived-mode pebble-mode html-mode  "Pebble"
   "Major mode for editing pebble files."
@@ -390,10 +399,6 @@
           . sgml-font-lock-syntactic-keywords)))
   (set (make-local-variable 'indent-line-function) 'pebble-indent-line))
 
-(define-key pebble-mode-map (kbd "C-c RET c") 'pebble-close-tag)
-(define-key pebble-mode-map (kbd "C-c RET t") 'pebble-insert-tag)
-(define-key pebble-mode-map (kbd "C-c RET v") 'pebble-insert-var)
-(define-key pebble-mode-map (kbd "C-c RET #") 'pebble-insert-comment)
 
 (when pebble-enable-indent-on-save
   (add-hook 'pebble-mode-hook
