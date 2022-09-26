@@ -174,7 +174,7 @@
                      (car open-tag)(nth 1 open-tag))
            (format "{%% end%s %%}"
                    (match-string 2))))
-      (error "Nothing to close")))
+      (user-error "Nothing to close")))
   (save-excursion (pebble-indent-line)))
 
 (defun pebble-insert-tag ()
