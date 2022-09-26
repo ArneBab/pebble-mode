@@ -400,10 +400,10 @@
   (set (make-local-variable 'indent-line-function) 'pebble-indent-line))
 
 
-(when pebble-enable-indent-on-save
-  (add-hook 'pebble-mode-hook
-    (lambda ()
-      (add-hook 'after-save-hook #'pebble-indent-buffer nil 'make-it-local))))
+(add-hook 'pebble-mode-hook
+          (lambda ()
+            (when pebble-enable-indent-on-save
+              (add-hook 'after-save-hook #'pebble-indent-buffer nil 'make-it-local))))
 
 ;;;###autoload
 (add-to-list 'auto-mode-alist '("\\.peb\\'" . pebble-mode))
