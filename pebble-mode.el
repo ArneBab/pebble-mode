@@ -31,6 +31,9 @@
 ;;        indentation (working with sgml)
 ;;        more to come
 
+;;   To change pebble-indent-on-save, you have to disable the mode and
+;;   then enable it again (to avoid adding a save hook undconditionally).
+
 ;; It follows pebbles syntax reference: https://pebbletemplates.io/wiki/guide/basic-usage/
 
 ;; pebble-mode is based on jinja2-mode by Florian Mounier
@@ -299,7 +302,9 @@
 (defvar pebble-font-lock-keywords
   pebble-font-lock-keywords-1)
 
-(defvar pebble-enable-indent-on-save nil)
+(defvar pebble-enable-indent-on-save nil
+  "Whether to re-indent the file on saving. For a change to take
+effect, you have to disable and re-enable the mode.")
 
 (defun pebble--sgml-indent-line-num ()
   "Indent the current line as SGML."
