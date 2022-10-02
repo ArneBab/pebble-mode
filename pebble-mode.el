@@ -77,6 +77,12 @@
   :type '(repeat string)
   :group 'pebble)
 
+(defcustom pebble-enable-indent-on-save nil
+  "Whether to re-indent the file on saving. For a change to take
+effect, you have to disable and re-enable the mode."
+  :type 'boolean
+  :group 'pebble)
+
 ;; (defcustom pebble-debug nil
 ;;   "Log indentation logic"
 ;;   :type 'boolean
@@ -300,10 +306,6 @@
 
 (defvar pebble-font-lock-keywords
   pebble-font-lock-keywords-1)
-
-(defvar pebble-enable-indent-on-save nil
-  "Whether to re-indent the file on saving. For a change to take
-effect, you have to disable and re-enable the mode.")
 
 (defun pebble--sgml-indent-line-num ()
   "Indent the current line as SGML."
