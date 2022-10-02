@@ -84,6 +84,7 @@ You can make this customizable per-file by using the following logic instead:
   \"Used as an `after-save-hook' if `pebble-indent-on-save' is non-nil.\"
   (when pebble-enable-indent-on-save (pebble-indent-buffer))
 (add-hook 'after-save-hook #'pebble-indent-buffer-hook nil t))
+;; thanks to riscy for this version!
 "
   :type 'boolean
   :group 'pebble)
