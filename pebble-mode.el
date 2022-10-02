@@ -29,7 +29,6 @@
 ;;        syntax highlighting
 ;;        sgml/html integration
 ;;        indentation (working with sgml)
-;;        more to come
 
 ;;   To change pebble-indent-on-save, you have to disable the mode and
 ;;   then enable it again (to avoid adding a save hook undconditionally).
