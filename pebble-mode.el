@@ -30,9 +30,6 @@
 ;;        sgml/html integration
 ;;        indentation (working with sgml)
 
-;;   To change pebble-indent-on-save, you have to disable the mode and
-;;   then enable it again (to avoid adding a save hook undconditionally).
-
 ;; It follows pebbles syntax reference: https://pebbletemplates.io/wiki/guide/basic-usage/
 
 ;; pebble-mode is based on jinja2-mode by Florian Mounier
@@ -79,7 +76,15 @@
 
 (defcustom pebble-enable-indent-on-save nil
   "Whether to re-indent the file on saving. For a change to take
-effect, you have to disable and re-enable the mode."
+effect, you have to disable and re-enable the mode. This is done
+to avoid adding a save hook undconditionally).
+
+You can make this customizable per-file by using the following logic instead:
+(defun pebble-indent-buffer-hook ()
+  \"Used as an `after-save-hook' if `pebble-indent-on-save' is non-nil.\"
+  (when pebble-enable-indent-on-save (pebble-indent-buffer))
+(add-hook 'after-save-hook #'pebble-indent-buffer-hook nil t))
+"
   :type 'boolean
   :group 'pebble)
 
