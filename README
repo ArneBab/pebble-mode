@@ -15,12 +15,9 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-Author: Florian Mounier aka paradoxxxzero
+Author: Arne Babenhauserheide, based on jinja2-mode by Florian Mounier aka paradoxxxzero
 Description :
   This is an emacs major mode for pebble with:
        syntax highlighting
        sgml/html integration
        indentation (working with sgml)
-       more to come
-
-pebble-mode is based on jinja2-mode by Florian Mounier.
