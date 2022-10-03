@@ -410,13 +410,9 @@ You can make this customizable per-file by using the following logic instead:
          nil t nil nil
          (font-lock-syntactic-keywords
           . sgml-font-lock-syntactic-keywords)))
-  (set (make-local-variable 'indent-line-function) 'pebble-indent-line))
-
-
-(add-hook 'pebble-mode-hook
-          (lambda ()
-            (when pebble-enable-indent-on-save
-              (add-hook 'after-save-hook #'pebble-indent-buffer nil 'make-it-local))))
+  (set (make-local-variable 'indent-line-function) 'pebble-indent-line)
+  (when pebble-enable-indent-on-save
+              (add-hook 'after-save-hook #'pebble-indent-buffer nil 'make-it-local)))
 
 ;;;###autoload
 (add-to-list 'auto-mode-alist '("\\.peb\\'" . pebble-mode))
