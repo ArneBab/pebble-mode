@@ -75,17 +75,18 @@
   :group 'pebble)
 
 (defcustom pebble-enable-indent-on-save nil
-  "Whether to re-indent the file on saving. For a change to take
+  "Whether to re-indent the file on saving.
+
+For a change to take
 effect, you have to disable and re-enable the mode. This is done
 to avoid adding a save hook undconditionally).
 
 You can make this customizable per-file by using the following logic instead:
-(defun pebble-indent-buffer-hook ()
+\(defun pebble-indent-buffer-hook ()
   \"Used as an `after-save-hook' if `pebble-indent-on-save' is non-nil.\"
   (when pebble-enable-indent-on-save (pebble-indent-buffer))
-(add-hook 'after-save-hook #'pebble-indent-buffer-hook nil t))
-;; thanks to riscy for this version!
-"
+\(add-hook 'after-save-hook #'pebble-indent-buffer-hook nil t))
+;; thanks to riscy for this version!"
   :type 'boolean
   :group 'pebble)
 
